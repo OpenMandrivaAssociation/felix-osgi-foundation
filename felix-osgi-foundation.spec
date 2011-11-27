@@ -7,7 +7,7 @@
 
 Name:    felix-osgi-foundation
 Version: 1.2.0
-Release: 6
+Release: 8
 Summary: Felix OSGi Foundation EE Bundle
 
 Group:   Development/Java
