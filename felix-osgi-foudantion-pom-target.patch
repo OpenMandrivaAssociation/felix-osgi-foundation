@@ -1,0 +1,22 @@
+--- org.osgi.foundation-1.2.0/pom.xml.build_target	2011-06-22 19:14:11.000000000 +0000
++++ org.osgi.foundation-1.2.0/pom.xml	2011-06-22 19:14:19.000000000 +0000
+@@ -31,6 +31,19 @@
+   <name>OSGi R4 Foundation EE</name>
+   <artifactId>org.osgi.foundation</artifactId>
+   <version>1.2.0</version>
++ <build>
++    <plugins>
++      <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-compiler-plugin</artifactId>
++        <version>2.3.2</version>
++        <configuration>
++          <source>1.5</source>
++          <target>1.5</target>
++        </configuration>
++      </plugin>
++    </plugins>
++  </build>
+ 
+   <scm>
+     <connection>scm:svn:https://svn.apache.org/repos/asf/felix/releases/org.osgi.foundation-1.2.0</connection>
