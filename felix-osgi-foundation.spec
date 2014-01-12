@@ -1,94 +1,98 @@
-# Prevent brp-java-repack-jars from being run.
-%define __jar_repack %{nil}
-
+%{?_javapackages_macros:%_javapackages_macros}
 %global bundle org.osgi.foundation
-%global felixdir %{_javadir}/felix
-%global POM %{_mavenpomdir}/JPP.felix-%{bundle}.pom
 
 Name:    felix-osgi-foundation
 Version: 1.2.0
-Release: 8
+Release: 14.1%{?dist}
 Summary: Felix OSGi Foundation EE Bundle
 
-Group:   Development/Java
 License: ASL 2.0
 URL:     http://felix.apache.org
 Source0: http://www.apache.org/dist/felix/%{bundle}-%{version}-project.tar.gz
 
-Patch0: felix-osgi-foudantion-pom-target.patch
-
 BuildArch: noarch
 
-BuildRequires: java-devel >= 0:1.6.0
+BuildRequires: java-devel >= 1:1.6.0
 BuildRequires: jpackage-utils
-BuildRequires: maven-compiler-plugin
-BuildRequires: maven-install-plugin
-BuildRequires: maven-jar-plugin
-BuildRequires: maven-javadoc-plugin
-BuildRequires: maven-resources-plugin
-BuildRequires: maven-plugin-bundle
+BuildRequires: maven-local
 BuildRequires: maven-surefire-provider-junit4
+BuildRequires: mockito
 
-Requires: java >= 0:1.6.0
-
-Requires(post):   jpackage-utils
-Requires(postun): jpackage-utils
+Requires: java >= 1:1.6.0
 
 %description
 OSGi Foundation Execution Environment (EE) Classes.
 
 %package javadoc
-Group:          Development/Java
-Summary:        Javadoc for %{name}
-Requires:       jpackage-utils
+
+Summary:        API documentation for %{name}
 
 %description javadoc
-API documentation for %{name}.
+This package contains API documentation for %{name}.
 
 %prep
 %setup -q -n %{bundle}-%{version}
-%patch0 -p1 -b build_target
+
+%mvn_file :%{bundle} "felix/%{bundle}"
+%mvn_alias "org.apache.felix:%{bundle}" "org.osgi:%{bundle}"
 
 %build
-export MAVEN_REPO_LOCAL=$(pwd)/.m2/repository
-%__mkdir_p $MAVEN_REPO_LOCAL
-
-mvn-jpp -e \
-  -Dmaven.repo.local=$MAVEN_REPO_LOCAL \
-  install javadoc:javadoc
+%mvn_build
 
 %install
-# jar
-install -pD -T -m 644 target/%{bundle}-%{version}.jar \
-  %{buildroot}%{felixdir}/%{bundle}.jar
+%mvn_install
 
-# pom
-install -pD -T -m 644 pom.xml %{buildroot}%{POM}
-%add_to_maven_depmap org.apache.felix %{bundle} %{version} JPP/felix %{bundle}
+%files -f .mfiles
+%doc LICENSE NOTICE
 
-# javadoc
-install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}
-%__cp -pr target/site/api*/* %{buildroot}%{_javadocdir}/%{name}
+%files javadoc -f .mfiles-javadoc
+%doc LICENSE NOTICE
 
-%post
-%update_maven_depmap
+%changelog
+* Mon Aug 05 2013 Mat Booth <fedora@matbooth.co.uk> - 1.2.0-14
+- Update for latest guidelines
 
-%postun
-%update_maven_depmap
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-13
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
-%pre javadoc
-# workaround for rpm bug, can be removed in F-17
-[ $1 -gt 1 ] && [ -L %{_javadocdir}/%{name} ] && \
-rm -rf $(readlink -f %{_javadocdir}/%{name}) %{_javadocdir}/%{name} || :
+* Mon Feb 25 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.2.0-12
+- Add missing BR: maven-local
 
-%files
-%defattr(-,root,root,-)
-%doc LICENSE
-%{felixdir}
-%{POM}
-%config(noreplace) %{_mavendepmapfragdir}/%{name}
+* Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
-%files javadoc
-%defattr(-,root,root,-)
-%{_javadocdir}/%{name}
+* Thu Aug 16 2012 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.2.0-10
+- Install LICENSE and NOTICE
+- Fix directory permissions
+- Remove rpm bug workaround
 
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Wed Nov 30 2011 Alexander Kurtakov <akurtako@redhat.com> 1.2.0-7
+- Build with maven 3.
+- Adapt to current guidelines.
+
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Mon Dec 27 2010 Mat Booth <fedora@matbooth.co.uk> - 1.2.0-5
+- Update maven plug-in BRs.
+
+* Mon Dec 13 2010 Stanislav Ochotnicky <sochotnicky@redhat.com> - 1.2.0-4
+- Versionless jars & javadocs
+- Fix pom filename (#655800)
+
+* Wed Jun 30 2010 Victor G. Vasilyev <victor.vasilyev@sun.com> 1.2.0-3
+- The javadoc subpackage should have requires on jpackage-utils
+- Use the mavenpomdir macro
+- Rename the mavenPOM macro to publicPOM
+
+* Tue Jun 29 2010 Victor G. Vasilyev <victor.vasilyev@sun.com> 1.2.0-2
+- Use maven to build the project instead of ant
+
+* Thu Jun 24 2010 Victor G. Vasilyev <victor.vasilyev@sun.com> 1.2.0-1
+- Release 1.2.0
