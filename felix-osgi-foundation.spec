@@ -3,7 +3,7 @@
 
 Name:    felix-osgi-foundation
 Version: 1.2.0
-Release: 14.1%{?dist}
+Release: 14.2
 Summary: Felix OSGi Foundation EE Bundle
 
 License: ASL 2.0
