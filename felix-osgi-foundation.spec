@@ -17,7 +17,7 @@ BuildRequires: jpackage-utils
 BuildRequires: maven-local
 BuildRequires: maven-surefire-provider-junit4
 BuildRequires: mockito
-
+BuildRequires: mvn(org.apache.felix:felix:pom:)
 Requires: java >= 1:1.6.0
 
 %description
