@@ -7,7 +7,7 @@ Release: 14.3
 Summary: Felix OSGi Foundation EE Bundle
 
 License: ASL 2.0
-URL:     http://felix.apache.org
+URL:     https://felix.apache.org
 Source0: http://www.apache.org/dist/felix/%{bundle}-%{version}-project.tar.gz
 
 BuildArch: noarch
